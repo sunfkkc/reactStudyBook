@@ -11,10 +11,22 @@ function TodoListItem({ todo, setTodos, todos }) {
   const removeTodo = useCallback((id) => {
     setTodos(todos.filter((todo) => todo.id !== id));
   });
+  const checkTodo = useCallback((id) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, checked: !todo.checked } : todo,
+      ),
+    );
+  });
   const { text, location, checked, id } = todo;
   return (
     <div className="TodoListItem">
-      <div className={cn('checkbox', { checked })}>
+      <div
+        className={cn('checkbox', { checked })}
+        onClick={() => {
+          checkTodo(id);
+        }}
+      >
         {checked ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}
         <div className="text">
           {text} - {location}
