@@ -7,24 +7,14 @@ import {
 } from 'react-icons/md';
 import cn from 'classnames';
 
-function TodoListItem({ todo, setTodos, todos }) {
-  const removeTodo = useCallback((id) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
-  });
-  const checkTodo = useCallback((id) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, checked: !todo.checked } : todo,
-      ),
-    );
-  });
+function TodoListItem({ todo, changeTodo, deleteTodo }) {
   const { text, location, checked, id } = todo;
   return (
     <div className="TodoListItem">
       <div
         className={cn('checkbox', { checked })}
         onClick={() => {
-          checkTodo(id);
+          changeTodo(id);
         }}
       >
         {checked ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}
@@ -35,7 +25,7 @@ function TodoListItem({ todo, setTodos, todos }) {
       <div className="remove">
         <MdRemoveCircleOutline
           onClick={() => {
-            removeTodo(id);
+            deleteTodo(id);
           }}
         />
       </div>
@@ -43,4 +33,4 @@ function TodoListItem({ todo, setTodos, todos }) {
   );
 }
 
-export default TodoListItem;
+export default React.memo(TodoListItem);
