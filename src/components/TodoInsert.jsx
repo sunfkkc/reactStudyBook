@@ -1,34 +1,16 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { MdAdd } from 'react-icons/md';
 import './TodoInsert.scss';
-import { Database } from '../model/database';
-import { getLocation } from '../model/util';
-function TodoInsert({ todos, setTodos }) {
+function TodoInsert({ onInsert, isLoading, setIsLoading }) {
   const [value, setValue] = useState('');
   const onChange = useCallback((evt) => {
     setValue(evt.target.value);
   }, []);
-  const nextId = useRef(Database.load().length + 1);
-  const onInsert = useCallback(
-    async (text) => {
-      const todo = {
-        id: nextId.current,
-        text: text,
-        location: await getLocation(),
-        checked: false,
-      };
-      setTodos(todos.concat(todo));
-      Database.save(todos.concat(todo));
-      inputEl.current.readOnly = false;
-      nextId.current += 1;
-    },
-    [todos],
-  );
 
   const onSubmit = useCallback(
     (evt) => {
-      inputEl.current.readOnly = true;
       onInsert(value);
+      setIsLoading(true);
       setValue('');
       evt.preventDefault();
     },
@@ -36,10 +18,19 @@ function TodoInsert({ todos, setTodos }) {
   );
 
   const inputEl = useRef(null);
+
+  useEffect(() => {
+    if (isLoading) {
+      inputEl.current.readOnly = true;
+    } else {
+      inputEl.current.readOnly = false;
+      inputEl.current.focus();
+    }
+  }, [isLoading]);
   return (
     <form className="TodoInsert" onSubmit={onSubmit}>
       <input
-        placeholder="할 일을 입력하세요"
+        placeholder={isLoading ? 'Loading...' : '할 일을 입력하세요'}
         value={value}
         onChange={onChange}
         ref={inputEl}
